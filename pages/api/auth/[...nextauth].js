@@ -5,8 +5,6 @@ import GoogleProvider from 'next-auth/providers/google';
 import { Admin } from '@/models/Admin'; // Assuming Admin model is already set up
 import { mongooseConnect } from '@/lib/mongoose';
 
-let adminEmails = ['emonh7066@gmail.com'];
-
 // Function to fetch admin emails from the database
 export async function fetchAdminEmails() {
   try {
@@ -19,11 +17,6 @@ export async function fetchAdminEmails() {
   }
 }
 
-// Fetch the admin emails once and update the `adminEmails` array
-fetchAdminEmails().then(emails => {
-  adminEmails = emails;
-});
-
 const authOptions = {
   providers: [
     GoogleProvider({
@@ -32,6 +25,7 @@ const authOptions = {
     }),
   ],
   adapter: MongoDBAdapter(clientPromise),
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     session: async (session, token, user) => {
       const adminEmails = await fetchAdminEmails();
